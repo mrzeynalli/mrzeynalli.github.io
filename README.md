@@ -1,3 +1,3 @@
-# mrzeynalli.github.io
+# mrzeynalli.github.io - my blog
 
 Hellou.
