@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on Mr. Zeynalli&#39;s blog</title>
+    <link>https://mrzeynalli.github.io/posts/</link>
+    <description>Recent content in Posts on Mr. Zeynalli&#39;s blog</description>
+    <generator>Hugo -- 0.138.0</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 10 Nov 2024 18:33:53 +0300</lastBuildDate>
+    <atom:link href="https://mrzeynalli.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>First Post</title>
+      <link>https://mrzeynalli.github.io/posts/first_post/</link>
+      <pubDate>Sun, 10 Nov 2024 18:33:53 +0300</pubDate>
+      <guid>https://mrzeynalli.github.io/posts/first_post/</guid>
+      <description>&lt;h3 id=&#34;intro&#34;&gt;Intro&lt;/h3&gt;
+&lt;p&gt;This is still the test post.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
