@@ -25,6 +25,7 @@ buildExpired = false
   # Theme settings
   defaultTheme = "auto" # "auto", "light", "dark"
   disableThemeToggle = false
+  custom_css = ["css/custom.css"]
 
   # Post metadata settings
   ShowReadingTime = true
@@ -37,11 +38,11 @@ buildExpired = false
   UseHugoToc = true
   disableSpecial1stPost = false
   disableScrollToTop = false
-  comments = false
+  comments = true
   hidemeta = false
   hideSummary = false
-  showtoc = false
-  tocopen = false
+  showtoc = true
+  tocopen = true
 
 
   [params.assets]
@@ -50,7 +51,7 @@ buildExpired = false
   [params.profileMode]
     enabled = true
     title = "Elvin Zeynalli"
-    subtitle = "This is my subtitle. I write about stuff."
+    subtitle = "I am a PhD candidate. I write about interesting technical stuff."
     imageUrl = "/me.jpg"
     imageWidth = 150
     imageHeight = 150
@@ -129,8 +130,6 @@ buildExpired = false
 # Markup configuration
 [markup]
   [markup.goldmark.renderer]
-    # Allow raw HTML in markdown files
     unsafe = true
   [markup.highlight]
-    # Enable CSS classes for code blocks
     noClasses = false

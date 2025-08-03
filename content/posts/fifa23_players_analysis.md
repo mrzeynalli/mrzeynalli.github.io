@@ -13,6 +13,7 @@ This project is carried out by me independently. The dataset is obtained publicl
 
 ---
 
+**Project description**
 - *Language:* Python
 - *Libraries:* sklearn, pandas, numpy, matplotlib, seaborn
 - *IDE:* Jupyter notebook

@@ -6,8 +6,15 @@
     <description>Recent content in K-Means Clustering on Mr. Zeynalli&#39;s Blog</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 24 Jan 2023 18:33:53 +0300</lastBuildDate>
+    <lastBuildDate>Sun, 08 Oct 2023 18:33:53 +0300</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/k-means-clustering/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity</title>
+      <link>http://localhost:1313/posts/scottish_schools_clustering/</link>
+      <pubDate>Sun, 08 Oct 2023 18:33:53 +0300</pubDate>
+      <guid>http://localhost:1313/posts/scottish_schools_clustering/</guid>
+      <description>&lt;p&gt;The objective of this project is to conduct a comprehensive analysis of Scottish schools in order to derive valuable insights. The analysis includes clustering and descriptive analysis, taking into account factors such as deprivation rate and total number of pupils. Additionally, an interactive map of Scotland has been developed to visually represent the location of each school. The clustering model has categorized local authorities into three distinct clusters based on average pupil count and deprivation score. The map highlights areas predominantly occupied by schools facing high levels of deprivation. The aim is to assist charities or non-governmental organizations (NGOs) involved in projects supporting these school pupils. All data used in this analysis is publicly available and sourced from the Scottish Government website. The Postcodes.io API was utilized to gather latitude and longitude coordinates for each school based on their respective postcodes. The codes for clustering, visualizations, map generation, and API application can be found in &lt;a href=&#34;https://github.com/mrzeynalli/scotland_schools.git&#34;&gt;my GitHub repository&lt;/a&gt;. You are welcome to access and utilize the repository&amp;rsquo;s contents for personal or commercial purposes without seeking my consent. I hope you find this information enlightening and enjoyable to read.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>FIFA23 Players Analysis: k-Means Clustering</title>
       <link>http://localhost:1313/posts/fifa23_players_analysis/</link>

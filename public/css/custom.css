@@ -1,0 +1,13 @@
+/* Justify main article content */
+.post-content,
+.content,
+.article {
+  text-align: justify;
+}
+
+/* Optional: Justify inside paragraphs specifically */
+.post-content p,
+.content p,
+.article p {
+  text-align: justify;
+}

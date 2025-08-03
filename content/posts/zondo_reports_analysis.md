@@ -1,5 +1,5 @@
 +++
-title = "Zondo Reports — Text Analysis"
+title = "Zondo Reports Text Analysis"
 date = 2023-01-04T18:33:53+03:00
 draft = false
 author = "Elvin Zeynalli"
@@ -9,13 +9,11 @@ tags = ["Data Analytics", "Text Analytics", "Data Visualization", "Python", "NLT
 categories = ["Data Analytics", "Text Analytics"]
 +++
 
-This project is carried out by me and my classmate under an assignment for one of my courses at the University of Edinburgh. The project received an A grade; all the coding and visualizations along with a mini report are shared on [my GitHub account.](https://github.com/mrzeynalli/Zondo-Reports-Analysis)
-
----
-
-*Project description*
+**Project description**
 - *Language:* Python
 - *Working file:* Jupyter notebook
+
+---
 
 In 2018, former President of South Africa, Jacob Zuma, established a commission of enquiry in state capture, known as The Judicial Commission of Inquiry into Allegations of State Capture, Corruption and Fraud in the Public Sector including Organs of State, or simply the Zondo Commission. The commission collected one exabyte of evidence, and on 22 June 2022 released its final report. The reports are available publicly in this link.
 
@@ -24,7 +22,7 @@ In 2018, former President of South Africa, Jacob Zuma, established a commission 
 
 This project aims to analyze the contents of these reports to capture the names of publicly traded companies whose names are mentioned more frequently. The results would be beneficial for prudent investors who seek ethical investments opportunities in South Africa.
 
-## Data collection and cleaning
+## Data Collection and Cleaning
 
 Two datasets were used in this project. First dataset were created by converting the report .pdf files into .csv format. *PyPDF2* module was used for transforming each pdf content into a text-formatted object, and *Pandas* was used to store those text-formatted objects into a dataframe. The final dataset of the texts were converted to .csv file and uploaded to [Github](https://github.com/mrzeynalli/Zondo-Reports-Analysis/blob/main/Datasets/Zondo_Reports.csv), where the file's raw format was used.
 
@@ -77,7 +75,7 @@ After obtaining the first dataset, we needed another dataset consisting of the c
 
 As of now, we have a dataset containing reports contents and a dataset containing the publicly traded companies in South Africa.
 
-## Data analysis
+## Analysis
 
 To carry out the text analysis, nltk module was primarily used. The below code displays how different classes of that module were imported:
 
@@ -140,7 +138,7 @@ for ind in listed_companies.index:
 
 Next, we used *FreqDist* function from *nltk.probability* to calculate how many times each company name is mentioned in all reports combined.
 
-## Data visualization and project results
+## Results
 
 *Matplotlib* and *seaborn* libraries were used for the purpose of visualization. The following figures were drawn to illustrate the results.
 

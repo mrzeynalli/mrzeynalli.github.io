@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity | Mr. Zeynalli&#39;s Blog</title>
+<meta name="keywords" content="Machine Learning, Unsupervised Learning, Clustering, K-Means Clustering, Data Analytics, Data Science, Artificial Intelligence">
+<meta name="description" content="The objective of this project is to conduct a comprehensive analysis of Scottish schools in order to derive valuable insights. The analysis includes clustering and descriptive analysis, taking into account factors such as deprivation rate and total number of pupils. Additionally, an interactive map of Scotland has been developed to visually represent the location of each school. The clustering model has categorized local authorities into three distinct clusters based on average pupil count and deprivation score. The map highlights areas predominantly occupied by schools facing high levels of deprivation. The aim is to assist charities or non-governmental organizations (NGOs) involved in projects supporting these school pupils. All data used in this analysis is publicly available and sourced from the Scottish Government website. The Postcodes.io API was utilized to gather latitude and longitude coordinates for each school based on their respective postcodes. The codes for clustering, visualizations, map generation, and API application can be found in my GitHub repository. You are welcome to access and utilize the repository&rsquo;s contents for personal or commercial purposes without seeking my consent. I hope you find this information enlightening and enjoyable to read.">
+<meta name="author" content="Elvin Zeynalli">
+<link rel="canonical" href="http://localhost:1313/posts/scottish_schools_clustering/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/scottish_schools_clustering/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Mr. Zeynalli&#39;s Blog (Alt + H)">Mr. Zeynalli&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/posts/" title="Posts">
+                    <span>Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity
+    </h1>
+    <div class="post-meta"><span title='2023-10-08 18:33:53 +0300 +0300'>October 8, 2023</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;2217 words&nbsp;·&nbsp;Elvin Zeynalli
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#analysis">Analysis</a>
+      <ul>
+        <li><a href="#descriptive-analysis">Descriptive analysis</a></li>
+        <li><a href="#unsupervised-learning-clustering">Unsupervised Learning: Clustering</a></li>
+      </ul>
+    </li>
+    <li><a href="#preprocessing-before-clustering">Preprocessing before Clustering</a></li>
+    <li><a href="#finding-k-the-optimal-number-of-clusters">Finding k: the optimal number of clusters</a>
+      <ul>
+        <li><a href="#within-cluster-sum-of-squares-method">Within-Cluster Sum of Squares method</a></li>
+        <li><a href="#silhouette-method">Silhouette method</a></li>
+      </ul>
+    </li>
+    <li><a href="#k-means-clustering">k-Means clustering</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>The objective of this project is to conduct a comprehensive analysis of Scottish schools in order to derive valuable insights. The analysis includes clustering and descriptive analysis, taking into account factors such as deprivation rate and total number of pupils. Additionally, an interactive map of Scotland has been developed to visually represent the location of each school. The clustering model has categorized local authorities into three distinct clusters based on average pupil count and deprivation score. The map highlights areas predominantly occupied by schools facing high levels of deprivation. The aim is to assist charities or non-governmental organizations (NGOs) involved in projects supporting these school pupils. All data used in this analysis is publicly available and sourced from the Scottish Government website. The Postcodes.io API was utilized to gather latitude and longitude coordinates for each school based on their respective postcodes. The codes for clustering, visualizations, map generation, and API application can be found in <a href="https://github.com/mrzeynalli/scotland_schools.git">my GitHub repository</a>. You are welcome to access and utilize the repository&rsquo;s contents for personal or commercial purposes without seeking my consent. I hope you find this information enlightening and enjoyable to read.</p>
+<p><strong>Project description</strong></p>
+<ul>
+<li><em>Language:</em> Python</li>
+<li><em>Libraries:</em> sklearn, pandas, numpy, matplotlib, seaborn, os</li>
+<li><em>IDE:</em> Microsoft Visual Studio Code, Jupyter Notebook</li>
+<li><em>Project type:</em> Machine learning, unsupervised learning, k-means clustering, data analytics, data visualisation</li>
+</ul>
+<hr>
+<p><img alt="Photo by Adam Wilson on Unsplash" loading="lazy" src="/images/scottish_state_schools_clustering/1.webp">
+<em>Photo by Adam Wilson on Unsplash</em></p>
+<p>The educational institutions in Scotland hold significant influence over the country&rsquo;s economy. Scotland&rsquo;s socio-demographic governmental structure places substantial emphasis on investing in the education of its population, as evidenced by the provision of free meals in all state schools. The economic status of local areas is largely determined by the location and prestige of state schools, with real estate prices being particularly dependent on this factor. Therefore, the level of deprivation in schools is a crucial determinant of areas that require further attention from either the government or non-governmental organizations. In this project, my objective is to assist concerned institutions in gaining a better understanding of the distribution of schools and the local authorities to which they are assigned.</p>
+<p>I have undertaken two projects for Scottish schools, one of which involves the implementation of K-Means Clustering. The other project involves the creation of a map of Scotland that displays the schools, which can be accessed via this link or my Medium page (soon).</p>
+<h1 id="schools-datasets-description">Schools Datasets Description<a hidden class="anchor" aria-hidden="true" href="#schools-datasets-description">#</a></h1>
+<p>All data pertaining to the schools for this project has been sourced from the official statistics website of the Scottish Government. The consolidation of information regarding Scottish schools is based on three datasets:</p>
+<ul>
+<li><strong>Postcode_deprivation:</strong> This dataset encompasses postcodes in Scotland along with their corresponding deprivation scores. Both pieces of information are utilized in this project. The dataset can be officially accessed from the following link.</li>
+<li><strong>Scottish_schools_contact:</strong> This dataset comprises contact information for Scottish schools, including their respective postcodes. The project utilizes the postcode and seedcode associated with each school. The dataset can be officially accessed from the following link.</li>
+<li><strong>Scottish_schools_stats:</strong> This dataset contains demographic statistics for Scottish schools. It has been formulated by merging various datasets. The data can be officially accessed from the following link.</li>
+</ul>
+<h2 id="analysis">Analysis<a hidden class="anchor" aria-hidden="true" href="#analysis">#</a></h2>
+<h3 id="descriptive-analysis">Descriptive analysis<a hidden class="anchor" aria-hidden="true" href="#descriptive-analysis">#</a></h3>
+<p>Initially, a descriptive analysis was conducted on the collected information from schools. Subsequently, the datasets were merged and null values were dropped, resulting in a conclusion of 2,431 schools (out of 2,458 state schools in Scotland) with a total of 692,729 pupils. The average number of pupils per school was found to be 284.9, with a standard deviation of 309.7. The school with the highest number of pupils had 2,226, while the lowest school had no pupils at present. In terms of deprivation quintile, the average score was 2.8, with a standard deviation of 1.2. The number of schools falling under each deprivation quintile score is provided below:</p>
+<ul>
+<li>1 quintile — 448 school</li>
+<li>2 quintile — 507 school</li>
+<li>3 quintile — 634 school</li>
+<li>4 quintile — 557 school</li>
+<li>5 quintile — 285 school</li>
+</ul>
+<p><img alt="Figure 1: Total number of pupils and schools per school type" loading="lazy" src="/images/scottish_state_schools_clustering/2.webp"><br>
+<em>Figure 1: Total number of pupils and schools per school type</em></p>
+<p>The data presented in <strong>Figure 1</strong> illustrates the distribution of schools and pupils across various school types. It is evident that primary schools hold the majority in terms of both school count and pupil enrollment. Notably, the number of secondary schools is disproportionately low in comparison to the significant number of pupils. Special schools represent a minority within the overall distribution.</p>
+<p><img alt="Figure 2: TOP10 Scottish local authorities with the highest number of pupils and schools" loading="lazy" src="/images/scottish_state_schools_clustering/3.webp"><br>
+<em>Figure 2: TOP10 Scottish local authorities with the highest number of pupils and schools</em></p>
+<p><strong>Figure 2</strong> displays the pupil and school statistics for the top 10 local authorities. Notably, Glasgow city, Edinburgh city, and Fife emerge as the frontrunners in terms of pupil population, whereas Highland, Glasgow, and Aberdeenshire dominate the representation of schools. A noteworthy observation is the significant concentration of pupils in Edinburgh, the capital city of Scotland, despite the relatively lower number of schools. Conversely, Highland boasts the highest number of schools, despite having a comparatively smaller pupil population.</p>
+<h3 id="unsupervised-learning-clustering">Unsupervised Learning: Clustering<a hidden class="anchor" aria-hidden="true" href="#unsupervised-learning-clustering">#</a></h3>
+<p>Following the descriptive analytics, a discernible pattern emerged, enabling the categorization of local authorities based on their average deprivation score and average pupil count. To accomplish this, I proceeded to develop a data clustering algorithm utilizing unsupervised machine learning models. After careful consideration, I selected the k-Means clustering method due to its extensive applicability and widespread usage. Prior to implementing the clustering technique, I performed an initial data transformation to ensure optimal results.</p>
+<h2 id="preprocessing-before-clustering">Preprocessing before Clustering<a hidden class="anchor" aria-hidden="true" href="#preprocessing-before-clustering">#</a></h2>
+<p>Due to the significant disparity in numerical values observed, with deprivation scores ranging from 1 to 5 and total pupil counts ranging from 0 to over 2000, I made the decision to normalize these values in order to enhance the efficiency of the clustering process. To accomplish this, I employed the <em>StandardScaler</em> object from the <em>sklearn</em> module.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Import standard scaler to z-score normalize the data</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># specify the numerical features</span>
+</span></span><span class="line"><span class="cl"><span class="n">numeric_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Pupils&#39;</span><span class="p">,</span> <span class="s1">&#39;DeprivationScore&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create a scaler object</span>
+</span></span><span class="line"><span class="cl"><span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Scale the numeric columns</span>
+</span></span><span class="line"><span class="cl"><span class="n">scaled_values</span> <span class="o">=</span> <span class="n">scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">numeric_columns</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Sonvert the numpy array of scaled values into a dataframe</span>
+</span></span><span class="line"><span class="cl"><span class="n">scaled_values</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scaled_values</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">numeric_columns</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="finding-k-the-optimal-number-of-clusters">Finding k: the optimal number of clusters<a hidden class="anchor" aria-hidden="true" href="#finding-k-the-optimal-number-of-clusters">#</a></h2>
+<p>When considering k-Means clustering, a crucial step is determining the number of clusters (k), which must be predetermined. However, identifying the optimal k is not a straightforward process and requires both domain knowledge and technical expertise. Given the lack of personal expertise in the school industry, I chose to rely on my technical knowledge. To ensure the accuracy of <em>k</em>, I employed two different methods to determine the best value. To achieve this objective, I utilized the Within-Cluster Sum of Squares (WCSS) and Average Silhouette Method.</p>
+<h3 id="within-cluster-sum-of-squares-method">Within-Cluster Sum of Squares method<a hidden class="anchor" aria-hidden="true" href="#within-cluster-sum-of-squares-method">#</a></h3>
+<p><strong>The WCSS method</strong> assesses the variations within each cluster by summing the squared differences between values. By testing different k values, it compares the differences in WCSS scores and selects the value at which the subsequent scores stabilize. The code implementation for this method is as follows:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Create a list to store WCSS values</span>
+</span></span><span class="line"><span class="cl"><span class="n">wcss</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Iterate in a range from 2 to 10, inclusive</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">km</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">k</span><span class="p">,</span> <span class="n">n_init</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">1234</span><span class="p">)</span> <span class="c1"># Create a cluster object for each k</span>
+</span></span><span class="line"><span class="cl">    <span class="n">km</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">scaled_values</span><span class="p">)</span> <span class="c1"># Fit the scaled data</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wcss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">km</span><span class="o">.</span><span class="n">inertia_</span><span class="p">)</span> <span class="c1"># Add the inertia score to wcss list</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Convert the wcss list into a pandas series object</span>
+</span></span><span class="line"><span class="cl"><span class="n">wcss_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">wcss</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Draw a line chart showing the inertia score, or WCSS, for each k iterated</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="n">wcss_series</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">wcss_series</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="n">wcss_series</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">wcss_series</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">150</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span> <span class="o">=</span> <span class="s1">&#39;Number of Clusters (k)&#39;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Within Cluster Sum of Squares (WCSS)&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>The provided codes generate <strong>Figure 3</strong>, which allows for the observation that the scores exhibit minimal variation beyond the value of 3. Consequently, it can be inferred that 3 is the optimal k, as determined through the utilization of the WCSS method.</p>
+<p><img alt="Figure 3: Within-Cluster Sum of Squares method results" loading="lazy" src="/images/scottish_state_schools_clustering/4.webp"><br>
+<em>Figure 3: Within-Cluster Sum of Squares method results</em></p>
+<p>However, this cannot be the sole basis for formulating three clusters. Therefore, it is necessary to run the Silhouette method as well.</p>
+<h3 id="silhouette-method">Silhouette method<a hidden class="anchor" aria-hidden="true" href="#silhouette-method">#</a></h3>
+<p><strong>The Silhouette method</strong> measures the similarity of a data point within its own cluster in comparison to other clusters. For each data point, it calculates its distance from its local points (a) and neighboring points (b). It then applies the formula <em>(b-a)/max(a,b)</em> to calculate the Silhouette score. The average Silhouette scores of all the points within one cluster determine the final score. A higher Silhouette value indicates better locality and thus a better cluster count. The code implementation for this method is as follows:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Import silhouette_score function</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">silhouette_score</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create a list to store silhouette values</span>
+</span></span><span class="line"><span class="cl"><span class="n">silhouette</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Iterate in a range from 2 to 10, inclusive</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">km</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">k</span><span class="p">,</span> <span class="n">n_init</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">1234</span><span class="p">)</span> <span class="c1"># Create a cluster object for each k</span>
+</span></span><span class="line"><span class="cl">    <span class="n">km</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">scaled_values</span><span class="p">)</span> <span class="c1"># Fit the scaled data</span>
+</span></span><span class="line"><span class="cl">    <span class="n">silhouette</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">silhouette_score</span><span class="p">(</span><span class="n">scaled_values</span><span class="p">,</span> <span class="n">km</span><span class="o">.</span><span class="n">labels_</span><span class="p">))</span> <span class="c1"># Add the silhouette score to silhouette list</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Convert the silhouette list into a pandas series object</span>
+</span></span><span class="line"><span class="cl"><span class="n">silhouette_series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">silhouette</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Draw a line chart showing the average silhouette score for each k iterated</span>
+</span></span><span class="line"><span class="cl"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lineplot</span><span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="n">silhouette_series</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">silhouette_series</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="n">silhouette_series</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="n">silhouette_series</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="mi">150</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span> <span class="o">=</span> <span class="s1">&#39;Number of Clusters (k)&#39;</span><span class="p">,</span> 
+</span></span><span class="line"><span class="cl">            <span class="n">ylabel</span> <span class="o">=</span> <span class="s1">&#39;Average Silhouette Score&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>Figure 4</strong> below represents the outcome of the aforementioned codes, displaying the results of Silhouette testing. The chart unequivocally indicates that 3 possesses the highest average silhouette score. Consequently, this test execution ultimately determines 3 as the optimal value for <em>k</em>, as well.</p>
+<p><img alt="Figure 4: Silhouette method results" loading="lazy" src="/images/scottish_state_schools_clustering/5.webp"><br>
+<em>Figure 4: Silhouette method results</em></p>
+<p>As both tests have indicated that the optimal value for <em>k</em> is 3, we can proceed with confidence to implement clustering with 3 clusters. The subsequent sub-section will construct the k-Means clustering and elucidate its outcomes.</p>
+<h2 id="k-means-clustering">k-Means clustering<a hidden class="anchor" aria-hidden="true" href="#k-means-clustering">#</a></h2>
+<p>In order to construct the model, the KMeans object from the sklearn library was utilized. The implementation of this object can be achieved through the following code:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Create kmeans object</span>
+</span></span><span class="line"><span class="cl"><span class="n">km</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n_init</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">1234</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Fit the scaled values</span>
+</span></span><span class="line"><span class="cl"><span class="n">km</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">scaled_values</span><span class="p">)</span>
+</span></span></code></pre></div><p>The parameter <em>&rsquo;n_init&rsquo;</em> determines the number of times the algorithm will be executed with different initializations of cluster centroids. Increasing this value is recommended in order to achieve better clustering results. After conducting multiple tests, it was determined that a value of 25 is sufficient for this project. The <em>&lsquo;random_state&rsquo;</em> parameter is used to control the randomness or randomness seed for various operations involving randomness. It is advisable to set it to 1234 for most machine learning models. Among the three constructed clusters, <strong>Cluster 0</strong> consists of 5 local authorities, <strong>Cluster 1</strong> consists of 15 local authorities, and <strong>Cluster 2</strong> consists of 13 local authorities.</p>
+<p><em>Table 1: Clustering results</em></p>
+<table>
+  <thead>
+      <tr>
+          <th>cluster</th>
+          <th>Pupils</th>
+          <th>DeprivationScore</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>0</td>
+          <td>438.29</td>
+          <td>3.50</td>
+      </tr>
+      <tr>
+          <td>1</td>
+          <td>331.48</td>
+          <td>2.39</td>
+      </tr>
+      <tr>
+          <td>2</td>
+          <td>175.87</td>
+          <td>3.31</td>
+      </tr>
+  </tbody>
+</table>
+<p>The clustering results can be found in <strong>Table 1</strong>.</p>
+<p><strong>Cluster 0</strong><br>
+This is the first cluster and is characterized by a relatively high number of pupils and a higher deprivation score. In other words, these are localities with a low level of deprivation but a large number of pupils. Despite the high number of pupils, these localities are relatively less deprived.</p>
+<p><strong>Cluster 1</strong><br>
+This group of localities also has a large number of pupils, but the average deprivation score is the lowest among the three clusters. This indicates that the local authorities in this category require the most attention.</p>
+<p><strong>Cluster 2</strong><br>
+The localities in this group have a lower number of pupils but a fair deprivation score. This group likely requires the least attention, as they are not highly deprived and the pupil count is not significant.<br>
+The scatter plot in Figure 5 illustrates the assignment of each locality to its respective cluster.<br>
+Zoom image will be displayed</p>
+<p><img alt="Figure 5: Scottish local authorities clustering" loading="lazy" src="/images/scottish_state_schools_clustering/6.webp"><br>
+<em>Figure 5: Scottish local authorities clustering</em></p>
+<p>The complete list of localities in each cluster is provided below:</p>
+<ul>
+<li><strong>Cluster 0:</strong> Aberdeen City, East Dunbartonshire, East Lothian, East Renfrewshire, Edinburgh City</li>
+<li><strong>Cluster 1:</strong> Clackmannanshire, Dundee City, East Ayrshire, Falkirk, Fife, Glasgow City, Inverclyde, Midlothian, North Ayrshire, North Lanarkshire, Renfrewshire, South Ayrshire, South Lanarkshire, West Dunbartonshire, West Lothian</li>
+<li><strong>Cluster 2:</strong> Aberdeenshire, Angus, Argyll &amp; Bute, Dumfries &amp; Galloway, Grant aided, Highland, Moray, Na h-Eileanan Siar, Orkney Islands, Perth &amp; Kinross, Scottish Borders, Shetland Islands, Stirling</li>
+</ul>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<p>I had two primary objectives in undertaking this project:</p>
+<ol>
+<li>Personal development — My aim was to showcase my abilities and enhance my career prospects by implementing similar projects and gaining valuable experience.</li>
+<li>Educational exploration — As an international citizen of Scotland, I was keen to deepen my understanding of the country&rsquo;s educational system. Additionally, I am actively involved in a charity organization that carries out projects for Scottish schools.</li>
+</ol>
+<p>If you found this project insightful and beneficial, I encourage you to show your appreciation by clapping and sharing it with your peers. Furthermore, feel free to utilize the project for your personal and professional purposes without seeking my consent, as I am a strong advocate of open-source projects and actively contribute to the community.</p>
+<p>Should you have any questions, concerns, or suggestions, please do not hesitate to comment below or contact me via email at <a href="mailto:ezeynalli@hotmail.com">ezeynalli@hotmail.com</a>.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/machine-learning/">Machine Learning</a></li>
+      <li><a href="http://localhost:1313/tags/unsupervised-learning/">Unsupervised Learning</a></li>
+      <li><a href="http://localhost:1313/tags/clustering/">Clustering</a></li>
+      <li><a href="http://localhost:1313/tags/k-means-clustering/">K-Means Clustering</a></li>
+      <li><a href="http://localhost:1313/tags/data-analytics/">Data Analytics</a></li>
+      <li><a href="http://localhost:1313/tags/data-science/">Data Science</a></li>
+      <li><a href="http://localhost:1313/tags/artificial-intelligence/">Artificial Intelligence</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/scottish_schools_map/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Analysis of State Schools in Scotland: Map of Scotland with Schools</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/python_web_crawler/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Building a Web Crawler using Python</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity on x"
+            href="https://x.com/intent/tweet/?text=Analysis%20of%20State%20Schools%20in%20Scotland%3a%20K-Means%20Clustering%20by%20Deprivation%20Rate%20and%20Pupils%20Quantity&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fscottish_schools_clustering%2f&amp;hashtags=MachineLearning%2cUnsupervisedLearning%2cClustering%2cK-MeansClustering%2cDataAnalytics%2cDataScience%2cArtificialIntelligence">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fscottish_schools_clustering%2f&amp;title=Analysis%20of%20State%20Schools%20in%20Scotland%3a%20K-Means%20Clustering%20by%20Deprivation%20Rate%20and%20Pupils%20Quantity&amp;summary=Analysis%20of%20State%20Schools%20in%20Scotland%3a%20K-Means%20Clustering%20by%20Deprivation%20Rate%20and%20Pupils%20Quantity&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fscottish_schools_clustering%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fscottish_schools_clustering%2f&title=Analysis%20of%20State%20Schools%20in%20Scotland%3a%20K-Means%20Clustering%20by%20Deprivation%20Rate%20and%20Pupils%20Quantity">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fscottish_schools_clustering%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity on whatsapp"
+            href="https://api.whatsapp.com/send?text=Analysis%20of%20State%20Schools%20in%20Scotland%3a%20K-Means%20Clustering%20by%20Deprivation%20Rate%20and%20Pupils%20Quantity%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fscottish_schools_clustering%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity on telegram"
+            href="https://telegram.me/share/url?text=Analysis%20of%20State%20Schools%20in%20Scotland%3a%20K-Means%20Clustering%20by%20Deprivation%20Rate%20and%20Pupils%20Quantity&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fscottish_schools_clustering%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Analysis of State Schools in Scotland: K-Means Clustering by Deprivation Rate and Pupils Quantity on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Analysis%20of%20State%20Schools%20in%20Scotland%3a%20K-Means%20Clustering%20by%20Deprivation%20Rate%20and%20Pupils%20Quantity&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fscottish_schools_clustering%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Mr. Zeynalli&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

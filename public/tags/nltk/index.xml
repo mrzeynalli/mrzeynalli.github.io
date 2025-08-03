@@ -9,10 +9,10 @@
     <lastBuildDate>Wed, 04 Jan 2023 18:33:53 +0300</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/nltk/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Zondo Reports — Text Analysis</title>
-      <link>http://localhost:1313/posts/test/</link>
+      <title>Zondo Reports Text Analysis</title>
+      <link>http://localhost:1313/posts/zondo_reports_analysis/</link>
       <pubDate>Wed, 04 Jan 2023 18:33:53 +0300</pubDate>
-      <guid>http://localhost:1313/posts/test/</guid>
+      <guid>http://localhost:1313/posts/zondo_reports_analysis/</guid>
       <description>This project is carried out by me and my classmate under an assignment for one of my courses at the University of Edinburgh. The project received an A grade; all the coding and visualizations along with a mini report are shared on my GitHub account.</description>
     </item>
   </channel>
