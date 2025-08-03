@@ -1,4 +1,136 @@
-baseURL = 'https://example.org/'
-languageCode = 'en-us'
-title = 'My New Hugo Site'
+# Base configuration for your Hugo site
+baseURL = "https://mrzeynalli.github.io"
+languageCode = "en-us"
+title = "Mr. Zeynalli's Blog"
 theme = "PaperMod"
+
+# Robots.txt generation
+enableRobotsTXT = true
+
+# Build settings
+buildDrafts = false
+buildFuture = false
+buildExpired = false
+
+# Enable outputs for the homepage
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+# Site parameters
+[params]
+  env = "development"
+  description = "Site description"
+  author = ["Elvin Zeynalli"]
+
+  # Theme settings
+  defaultTheme = "auto" # "auto", "light", "dark"
+  disableThemeToggle = false
+
+  # Post metadata settings
+  ShowReadingTime = true
+  ShowShareButtons = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowWordCount = true
+  ShowRssButtonInSectionTermList = true
+  UseHugoToc = true
+  disableSpecial1stPost = false
+  disableScrollToTop = false
+  comments = false
+  hidemeta = false
+  hideSummary = false
+  showtoc = false
+  tocopen = false
+
+
+  [params.assets]
+    disableFingerprinting = false
+
+  [params.profileMode]
+    enabled = true
+    title = "Elvin Zeynalli"
+    subtitle = "This is my subtitle. I write about stuff."
+    imageUrl = "/me.jpg"
+    imageWidth = 150
+    imageHeight = 150
+    imageTitle = "my profile picture"
+
+    # Buttons that appear below the subtitle
+    [[params.profileMode.buttons]]
+      name = "Posts"
+      url = "/posts/"
+    [[params.profileMode.buttons]]
+      name = "Contact"
+      url = "mailto:ezeynalli@hotmail.com"
+    [[params.profileMode.buttons]]
+      name = "GitHub"
+      url = "https://github.com/mrzeynalli"
+
+  # --- Social Icons ---
+  # Add your social media links here.
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/mrzeynalli"
+  [[params.socialIcons]]
+    name = "x"
+    url = "https://x.com/mr7eynalli"
+  [[params.socialIcons]]
+    name = "linkedin"
+    url = "https://linkedin.com/in/elvinzeynalli"
+  [[params.socialIcons]]
+    name = "email"
+    url = "mailto:ezeynalli@hotmail.com"
+
+  # --- Search Functionality (Fuse.js) ---
+  [params.fuseOpts]
+    isCaseSensitive = false
+    shouldSort = true
+    location = 0
+    distance = 1000
+    threshold = 0.4
+    minMatchCharLength = 0
+    keys = ["title", "permalink", "summary", "content"]
+
+# --- Main Menu / Navigation Tabs ---
+[menu]
+  [[menu.main]]
+    identifier = "posts"
+    name = "Posts"
+    url = "/posts/"
+    weight = 10
+  [[menu.main]]
+    identifier = "categories"
+    name = "Categories"
+    url = "/categories/"
+    weight = 20
+  [[menu.main]]
+    identifier = "tags"
+    name = "Tags"
+    url = "/tags/"
+    weight = 30
+  [[menu.main]]
+    identifier = "archives"
+    name = "Archives"
+    url = "/archives/"
+    weight = 40
+  [[menu.main]]
+    identifier = "search"
+    name = "Search"
+    url = "/search/"
+    weight = 50
+
+# Taxonomies
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+  series = "series"
+
+# Markup configuration
+[markup]
+  [markup.goldmark.renderer]
+    # Allow raw HTML in markdown files
+    unsafe = true
+  [markup.highlight]
+    # Enable CSS classes for code blocks
+    noClasses = false
