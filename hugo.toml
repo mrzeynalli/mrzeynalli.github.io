@@ -19,11 +19,11 @@ buildExpired = false
 # Site parameters
 [params]
   env = "development"
-  description = "Site description"
+  description = "Just interesting tech stuff."
   author = ["Elvin Zeynalli"]
 
   # Theme settings
-  defaultTheme = "auto" # "auto", "light", "dark"
+  defaultTheme = "auto"
   disableThemeToggle = false
   custom_css = ["css/custom.css"]
 
@@ -33,7 +33,7 @@ buildExpired = false
   ShowPostNavLinks = true
   ShowBreadCrumbs = true
   ShowCodeCopyButtons = true
-  ShowWordCount = true
+  ShowWordCount = false
   ShowRssButtonInSectionTermList = true
   UseHugoToc = true
   disableSpecial1stPost = false
@@ -62,9 +62,6 @@ buildExpired = false
       name = "Posts"
       url = "/posts/"
     [[params.profileMode.buttons]]
-      name = "Contact"
-      url = "mailto:ezeynalli@hotmail.com"
-    [[params.profileMode.buttons]]
       name = "GitHub"
       url = "https://github.com/mrzeynalli"
 
@@ -79,6 +76,9 @@ buildExpired = false
   [[params.socialIcons]]
     name = "linkedin"
     url = "https://linkedin.com/in/elvinzeynalli"
+  [[params.socialIcons]]
+    name = "medium"
+    url = "https://mrzerynalli.medium.com"
   [[params.socialIcons]]
     name = "email"
     url = "mailto:ezeynalli@hotmail.com"
