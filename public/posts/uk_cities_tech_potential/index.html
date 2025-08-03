@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Non-capital UK Cities with High-tech Potential | Mr. Zeynalli&#39;s Blog</title>
 <meta name="keywords" content="Data Analytics, Data Science, Data Visualization, Companies House, API Development, Web Scraping">
-<meta name="description" content="An analysis of non-capital UK cities with high-tech potential using Companies House API. A data analytics project that identifies decentralized tech hubs in the UK.">
+<meta name="description" content="This project is carried out by me under a final assignment for one of my courses at the University of Edinburgh. The project received an A grade.">
 <meta name="author" content="Elvin Zeynalli">
 <link rel="canonical" href="http://localhost:1313/posts/uk_cities_tech_potential/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
@@ -135,9 +135,9 @@
       Non-capital UK Cities with High-tech Potential
     </h1>
     <div class="post-description">
-      An analysis of non-capital UK cities with high-tech potential using Companies House API. A data analytics project that identifies decentralized tech hubs in the UK.
+      This project is carried out by me under a final assignment for one of my courses at the University of Edinburgh. The project received an A grade.
     </div>
-    <div class="post-meta"><span title='2023-01-05 18:33:53 +0300 +0300'>January 5, 2023</span>&nbsp;·&nbsp;3 min&nbsp;·&nbsp;510 words&nbsp;·&nbsp;Elvin Zeynalli
+    <div class="post-meta"><span title='2023-01-05 18:33:53 +0300 +0300'>January 5, 2023</span>&nbsp;·&nbsp;9 min&nbsp;·&nbsp;1786 words&nbsp;·&nbsp;Elvin Zeynalli
 
 </div>
   </header> <div class="toc">
@@ -149,71 +149,205 @@
         <div class="inner"><nav id="TableOfContents">
   <ul>
     <li><a href="#data-collection-and-cleaning">Data Collection and Cleaning</a></li>
-    <li><a href="#data-analysis">Data Analysis</a></li>
-    <li><a href="#data-visualization-and-project-results">Data Visualization and Project Results</a></li>
-    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#analysis">Analysis</a></li>
+    <li><a href="#results">Results</a></li>
   </ul>
 </nav>
         </div>
     </details>
 </div>
 
-  <div class="post-content"><p><strong>Project description</strong></p>
+  <div class="post-content"><p>This project is carried out by me under a final assignment for one of my courses at the University of Edinburgh. The project received an A grade.</p>
+<hr>
+<p><strong>Project description</strong></p>
 <ul>
 <li><em>Language:</em> Python</li>
 <li><em>Libraries:</em> requests, pandas, numpy, matplotlib, seaborn, os, math, time, datetime, json</li>
 <li><em>IDE:</em> Microsoft Visual Studio Code, Jupyter Notebook</li>
 <li><em>Project type:</em> Data analytics, Web scraping, API</li>
 </ul>
-<hr>
-<p><a href="https://www.gov.uk/government/organisations/companies-house">Companies House</a> is an agency formed by the British Government to maintain the registration of all the companies in the UK. It maintains a database that stores the information of the registered companies. Each company has features such as company name, Standard Industrial Classification (SIC) code, creation date, cessation date (if ceased operating), company board and shareholder info, etc. By using an API, it is possible to scrape the data from that database by using various specifications.</p>
+<p><a href="https://www.gov.uk/government/organisations/companies-house"><strong>Companies House</strong></a> is an agency formed by the British Government to maintain the registration of all the companies in the UK. It maintains a database that stores the information of the registered companies. Each company has features such as company name, Standard Industrial Classification (SIC) code, creation date, cessation date (if ceased operating), company board and shareholder info, etc. By using an API, it is possible to scrape the data from that database by using various specifications.</p>
 <p>This project aims to scrape the data of the tech companies in the UK and figure out the main tech areas (cities) besides London, the capital of the UK. The idea is to decentralize the tech processes from the capital city. The results of this project can be beneficial for people seeking low-competitive employment in the tech sphere or investors seeking conservative investment options in the UK tech arena.</p>
 <p><img alt="Photo by Rodrigo Santos on Unsplash" loading="lazy" src="/images/uk_cities_tech_potential/1.webp"><br>
 <em>Photo by Rodrigo Santos on Unsplash</em></p>
 <h2 id="data-collection-and-cleaning">Data Collection and Cleaning<a hidden class="anchor" aria-hidden="true" href="#data-collection-and-cleaning">#</a></h2>
-<p>The project uses the <em>requests</em> library to request data from Companies House. The scraped data is converted into <em>json</em> format and combined into a single dataframe. The following Python libraries are used:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<p>The project uses the <em>requests</em> library to request the data from Companies House. Next, the scraped data is converted into <em>json</em> format, after which the companies&rsquo; data from different pages are combined into one single dataframe. The following libraries are imported to achieve the whole analysis process:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Import necessary libraries for this project</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span> <span class="k">as</span> <span class="nn">rq</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span> <span class="k">as</span> <span class="nn">rq</span> <span class="c1"># to request data</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">math</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Modules for visualization</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+</span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">warnings</span>
-</span></span><span class="line"><span class="cl"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
-</span></span></code></pre></div><p>A class-based API caller function was built to collect company data and return it as a dataframe:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">api_caller</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">root_url</span> <span class="o">=</span> <span class="s1">&#39;https://api.companieshouse.gov.uk/&#39;</span>
-</span></span><span class="line"><span class="cl">    <span class="n">key</span> <span class="o">=</span> <span class="s2">&#34;YOUR_API_KEY&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span> <span class="c1"># Imported to ignore warnings</span>
+</span></span></code></pre></div><p>A sophisticated class object was created with a function that calls the data from the database and returns the dataframe object that stores the companies&rsquo; information. By applying this to numerous pages, it is possible to scrape as many companies&rsquo; data as intended.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Create a class that calls the API</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">api_caller</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">return_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_extention</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Root url for Companies House database</span>
+</span></span><span class="line"><span class="cl">    <span class="n">root_url</span> <span class="o">=</span> <span class="s1">&#39;https://api.companieshouse.gov.uk/&#39;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># API key</span>
+</span></span><span class="line"><span class="cl">    <span class="n">key</span> <span class="o">=</span> <span class="s2">&#34;YOU API KEY&#34;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Create a function that returns the dataframe of the companies found for the selected url</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">return_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">url_extention</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Create a url variable that combines the selected url to root url</span>
 </span></span><span class="line"><span class="cl">        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_url</span> <span class="o">+</span> <span class="n">url_extention</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Request a response from the url with the API key</span>
 </span></span><span class="line"><span class="cl">        <span class="n">query_result</span> <span class="o">=</span> <span class="n">rq</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Check if the response of the request is successful (which is denoted with code 200)</span>
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">query_result</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># Create a json file by decoding the response</span>
 </span></span><span class="line"><span class="cl">            <span class="n">json_file</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">query_result</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># Create a variable that stores only items from the json file</span>
 </span></span><span class="line"><span class="cl">            <span class="n">items_file</span> <span class="o">=</span> <span class="n">json_file</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># Create a variable that stores the keys from the items file</span>
 </span></span><span class="line"><span class="cl">            <span class="n">keys</span> <span class="o">=</span> <span class="n">items_file</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">            <span class="n">companies_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">items_file</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="n">keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># Create the dataframe with companies as data and keys as columns</span>
+</span></span><span class="line"><span class="cl">            <span class="n">companies_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">items_file</span><span class="p">,</span><span class="n">columns</span> <span class="o">=</span> <span class="n">keys</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># Return the created dataframe</span>
 </span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">companies_df</span>
-</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span> <span class="c1"># if the response code is not 200, return none (non-200 code, either 400 or 405, means either the request is not</span>
+</span></span><span class="line"><span class="cl">              <span class="c1"># correctly asked or there is not such a url. This is helpful on tackling the error when my upcoming return_companies</span>
+</span></span><span class="line"><span class="cl">              <span class="c1"># function goes into further pages to quest companies where there is no longer any companies listed)</span>
 </span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="kc">None</span>
-</span></span></code></pre></div><p>Full SIC code lists were scraped and processed. A CSV file of SIC codes is available on <a href="https://github.com/mrzeynalli/company_houses_analysis/blob/main/datasets/sic_codes_list.csv">my GitHub</a>.</p>
-<p>I created functions to query companies based on single or multiple SIC codes, as well as functions to process address data and extract &rsquo;locality&rsquo; and &lsquo;postal_code&rsquo; fields from nested dictionaries.</p>
-<h2 id="data-analysis">Data Analysis<a hidden class="anchor" aria-hidden="true" href="#data-analysis">#</a></h2>
-<p>I began by extracting SIC codes for tech-related industries using keywords like <em>&rsquo;technology&rsquo;</em>, <em>&rsquo;engineering&rsquo;</em>, <em>&lsquo;software&rsquo;</em>, and <em>&lsquo;hardware&rsquo;</em>. Duplicate entries were removed. I also extracted city names from company addresses and grouped the data by city (excluding London).</p>
-<h2 id="data-visualization-and-project-results">Data Visualization and Project Results<a hidden class="anchor" aria-hidden="true" href="#data-visualization-and-project-results">#</a></h2>
-<p>Using <em>matplotlib</em> and <em>seaborn</em>, I visualized the distribution of tech companies across non-capital cities in the UK.</p>
-<p><em>Figure 1: Proportion of Tech Companies in TOP10 Non-Capital Cities of UK</em>
-<img alt="Figure 1" loading="lazy" src="/images/uk_cities_tech_potential/2.webp"></p>
-<p>Manchester, Birmingham, and Bristol emerge as the top non-capital cities with tech companies, capturing 19.1%, 14.0%, and 10.6% of the share respectively.</p>
-<p><em>Figure 2: Tech Companies in TOP10 Non-Capital Cities per Company Status</em>
-<img alt="Figure 2" loading="lazy" src="/images/uk_cities_tech_potential/3.webp"></p>
-<p>Birmingham leads in active tech companies, followed by Manchester and Cambridge.</p>
-<hr>
-<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
-<p>Manchester, Birmingham, Bristol, and Cambridge are identified as the top non-capital UK cities with high-tech potential. These cities are recommended for individuals seeking less-competitive job markets or investors targeting decentralized tech hubs.</p>
+</span></span></code></pre></div><p>SIC code is a 5-digit code that categorizes each company based on the economic activity they carry on. They were used as main features to call the companies for a selected economic area. <a href="https://resources.companieshouse.gov.uk/sic/">The full list of SIC</a> codes is publicly available on the Companies House website. I formulated the csv file of those codes and uploaded it to <a href="https://github.com/mrzeynalli/company_houses_analysis/blob/main/datasets/sic_codes_list.csv">my GitHub account</a>, whose raw format I can call later inside my working file. The SIC codes csv file contains two columns: SIC code and respective industry name.</p>
+<p>Later, I created two additional functions that call companies based on one or multiple SIC codes. It is important to note that the first function calls the companies based on one SIC code and returns one dataframe containing their information. The second one calls the companies based on multiple SIC codes, using the first function for each of them, and returns one dataframe, which is a combination of all dataframe for each individual SIC code. This way, I could simply put the list of SIC codes (usually one economic area, say technology, has more than one SIC code), and the function returns the dataframe entailing the data for all the companies that go under those SIC codes.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Create a function that returns the companies based on one single SIC code </span>
+</span></span><span class="line"><span class="cl"><span class="c1"># and the number of expected companies</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">return_companies_on_sic_code</span><span class="p">(</span><span class="n">sic_code</span><span class="p">,</span> <span class="n">number_of_companies</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Round up number of pages</span>
+</span></span><span class="line"><span class="cl">    <span class="n">number_of_pages</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">number_of_companies</span> <span class="o">/</span> <span class="mi">20</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Create an empty dataframe as a general dataframe to store further companies</span>
+</span></span><span class="line"><span class="cl">    <span class="n">companies_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Iterate through the pages</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">page_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">number_of_pages</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Create the url extention that checks for sic_code based on 20 companies per page and page starting </span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># index of the last companies in the previous page</span>
+</span></span><span class="line"><span class="cl">        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;advanced-search/companies?sic_codes=</span><span class="si">{</span><span class="n">sic_code</span><span class="si">}</span><span class="s2">&amp;items_per_page=20&amp;start_index=</span><span class="si">{</span><span class="n">page_index</span><span class="o">*</span><span class="mi">20</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Store the companies collected in one particular page</span>
+</span></span><span class="line"><span class="cl">        <span class="n">page_data</span> <span class="o">=</span> <span class="n">api_caller</span><span class="p">()</span><span class="o">.</span><span class="n">return_dataframe</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Add the one-page collected companies dataframe to the general dataframe</span>
+</span></span><span class="line"><span class="cl">        <span class="n">companies_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">companies_data</span><span class="p">,</span><span class="n">page_data</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Sleeps for 0.4 seconds not to crash into time errors</span>
+</span></span><span class="line"><span class="cl">        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Return the general dataframe</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">companies_data</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">###########################################################################################################################</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create a function that returns the companies based on multiple single SIC codes </span>
+</span></span><span class="line"><span class="cl"><span class="c1"># and the number of expected companies</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">return_companies_on_multiple_sic_codes</span><span class="p">(</span><span class="n">sic_codes_list</span><span class="p">,</span> <span class="n">number_of_companies</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Create an empty dataframe as a general dataframe to store further companies</span>
+</span></span><span class="line"><span class="cl">    <span class="n">companies_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Iterate through the input sic codes</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">sic_code</span> <span class="ow">in</span> <span class="n">sic_codes_list</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Use the previously created one-sic-code-based companies returning function to return multiple-pages companies</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># each sic code</span>
+</span></span><span class="line"><span class="cl">        <span class="n">companies_data_for_sic_code</span> <span class="o">=</span> <span class="n">return_companies_on_sic_code</span><span class="p">(</span><span class="n">sic_code</span><span class="p">,</span> <span class="n">number_of_companies</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Add the companies for one sic code to general dataframe</span>
+</span></span><span class="line"><span class="cl">        <span class="n">companies_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">((</span><span class="n">companies_data</span><span class="p">,</span><span class="n">companies_data_for_sic_code</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Sleeps for 0.4 seconds not to crash into time errors</span>
+</span></span><span class="line"><span class="cl">        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Return the general dataframe</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">companies_data</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><p>Additionally, I created another function that requires a list of intended industry names as an input, then goes through the SIC codes csv file explained earlier, and returns a list of the SIC codes that are related to that specified names. As the respective industry names for SIC codes are usually large and contain multiple words, the function checks if every single one of the input names takes part inside the industry names for SIC codes.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Create a function that returns the list of SIC Codes based on the selected keywords for industry names </span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">words_dependent_sic_codes</span><span class="p">(</span><span class="n">search_words_list</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Create an empty list to store further SIC Codes</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sic_codes</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Iterate through all industry names in SIC Codes dataframe</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">industry</span> <span class="ow">in</span> <span class="n">sic_codes_df</span><span class="p">[</span><span class="s1">&#39;Description&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Iterate through each search_word and removable_word</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">search_word</span> <span class="ow">in</span> <span class="n">search_words_list</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="c1"># Check if the search word is in industry name</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">search_word</span> <span class="ow">in</span> <span class="n">industry</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Create a dataframe condition to call specific industry</span>
+</span></span><span class="line"><span class="cl">                <span class="n">condition</span> <span class="o">=</span> <span class="p">(</span><span class="n">sic_codes_df</span><span class="p">[</span><span class="s1">&#39;Description&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">industry</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Store the SIC Code of that specific industry</span>
+</span></span><span class="line"><span class="cl">                <span class="n">sic_code</span> <span class="o">=</span> <span class="n">sic_codes_df</span><span class="p">[</span><span class="n">condition</span><span class="p">][</span><span class="s1">&#39;SIC Code&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Convert the stores SIC Code into integer</span>
+</span></span><span class="line"><span class="cl">                <span class="n">sic_code_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sic_code</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># Add the integer SIC Code into SIC Codes list</span>
+</span></span><span class="line"><span class="cl">                <span class="n">sic_codes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sic_code_int</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                
+</span></span><span class="line"><span class="cl">    <span class="c1"># Remove the duplicated SIC Codes by converting list into set and back to list            </span>
+</span></span><span class="line"><span class="cl">    <span class="n">sic_codes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">sic_codes</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Return the SIC Codes list</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">sic_codes</span>
+</span></span></code></pre></div><h2 id="analysis">Analysis<a hidden class="anchor" aria-hidden="true" href="#analysis">#</a></h2>
+<p>After preparing the pre-collection functions, I began by calling the SIC codes for technology companies. I input a list of tech search words including <em>&rsquo;technology&rsquo;</em>, <em>&rsquo;engineering&rsquo;</em>, <em>&lsquo;software&rsquo;</em>, and <em>&lsquo;hardware&rsquo;</em> into a SIC-codes-calling function and received the codes for the companies that fell under the industries that correspond to my specified search words. I specified to return up to 1000 companies for each SIC code. Presumably, this method was prone to calling the same companies from different SIC codes, given the fact that some companies in the database are attached to multiple SIC codes. Thus, I removed the duplicates with respect to the &lsquo;company_name&rsquo; column that plays the role of a unique identifier.</p>
+<p>One interesting problem was that one of the columns returned from the database was an address column, whose values were a dictionary storing the address info, including locality and postal code. So, it was necessary to split these values into different columns. I built up another function that handles this objective.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># Create a &#39;locality&#39; and &#39;postal_code&#39; columns out of &#39;registered_office_address&#39;, which is a dictionary in a dataframe</span>
+</span></span><span class="line"><span class="cl"><span class="n">columns_to_be_splitted</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;locality&#39;</span><span class="p">,</span><span class="s1">&#39;postal_code&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Define a function that splits the given column</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">cell_dict_splitter</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">dataframe</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">dataframe</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataframe</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Iterate through the candidate columns</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">columns_to_be_splitted</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># Split the candidate columns</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cell_dict_splitter</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="s1">&#39;registered_office_address&#39;</span><span class="p">,</span><span class="n">tech_companies_df</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl"><span class="c1"># Drop &#39;registered_office_address&#39; column given it has already been processed</span>
+</span></span><span class="line"><span class="cl"><span class="n">tech_companies_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;registered_office_address&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><p>Newly formed <em>&rsquo;locality&rsquo;</em> column provides the city names that the respective companies were launched in. This will help me to group the companies by their cities to see which cities are distinguished with higher counts of tech companies.</p>
+<p>Next, I filtered the companies on a condition to keep the cities what are not London. I did this process by using the previously created filtering class, which has unfiltering option (I defined &lsquo;unfiltering&rsquo; as a process to filter out the selected condition. I unfiltered the companies by filtering out the ones launched in London). For the next step, I used <em>groupby</em> method from <em>pandas</em> to group the counts of tech companies by their city.</p>
+<h2 id="results">Results<a hidden class="anchor" aria-hidden="true" href="#results">#</a></h2>
+<p><em>Matplotlib</em> and <em>seaborn</em> libraries were used for the purpose of visualization. The following figures were drawn to illustrate the results.</p>
+<p><img alt="Figure 1: Proportion of Tech Companies in TOP10 Non-Capital Cities of UK" loading="lazy" src="/images/uk_cities_tech_potential/2.webp"><br>
+<em>Figure 1: Proportion of Tech Companies in TOP10 Non-Capital Cities of UK</em></p>
+<p><strong>Figure 1</strong> displays the 10 non-capital UK cities that have the highest proportion of tech companies. Manchester, Birmingham, and Bristol are the main non-capital cities with tech firms. They, respectively, capture 19.1%, 14.0%, and 10.6% of the total distribution of tech companies for non-capital cities. They are followed by Cambridge (10.6%), Nottingham (8.9%), and Cardiff (8.0%). Leeds, Coventry, Reading, and Sheffield are the other cities that made it to TOP10.</p>
+<p><img alt="Figure 2: Tech Companies in TOP 10 Non-Capital Cities of UK per Company Status" loading="lazy" src="/images/uk_cities_tech_potential/3.webp"><br>
+<em>Figure 2: Tech Companies in TOP 10 Non-Capital Cities of UK per Company Status</em></p>
+<p>Regarding active tech companies, Birmingham leads the way with above 120 companies, passing Manchester and Cambridge, both of which have nearly 100 active tech firms. While not huge variations are experienced with the rest of the cities, Coventry is found to have the lowest number of active firms (<strong>Figure 2</strong>).</p>
+<p>Overall, Manchester, Birmingham, Bristol, and Cambridge are the main recommended cities for people who quest a non-aggressive tech firm launch or less-competitive tech job.</p>
 
 
   </div>
