@@ -23,13 +23,6 @@
       <description>This project is carried out by me for a university assignment. The dataset is a randomly generated visitor clickstream to a website of a company. All codes and explanations, along with the dataset, are present in my GitHub repository.</description>
     </item>
     <item>
-      <title>Non-capital UK Cities with High-tech Potential</title>
-      <link>http://localhost:1313/posts/uk_cities_tech_potential/</link>
-      <pubDate>Thu, 05 Jan 2023 18:33:53 +0300</pubDate>
-      <guid>http://localhost:1313/posts/uk_cities_tech_potential/</guid>
-      <description>An analysis of non-capital UK cities with high-tech potential using Companies House API. A data analytics project that identifies decentralized tech hubs in the UK.</description>
-    </item>
-    <item>
       <title>Zondo Reports Text Analysis</title>
       <link>http://localhost:1313/posts/zondo_reports_analysis/</link>
       <pubDate>Wed, 04 Jan 2023 18:33:53 +0300</pubDate>
