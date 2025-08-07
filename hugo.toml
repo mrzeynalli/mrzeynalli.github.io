@@ -78,7 +78,7 @@ buildExpired = false
     url = "https://linkedin.com/in/elvinzeynalli"
   [[params.socialIcons]]
     name = "medium"
-    url = "https://mrzerynalli.medium.com"
+    url = "https://mrzeynalli.medium.com"
   [[params.socialIcons]]
     name = "email"
     url = "mailto:ezeynalli@hotmail.com"

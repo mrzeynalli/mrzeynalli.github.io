@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Optimal Blackjack Strategy Through Dynamic Programming | Mr. Zeynalli&#39;s Blog</title>
+<meta name="keywords" content="Dynamic Programming, Algorithms, Blackjack, Python">
+<meta name="description" content="Blackjack
+Blackjack, also known as 21, is a casino banking game where players compete against the dealer rather than each other. The standard version uses one or more 52-card decks, where cards 2-10 count at face value, face cards (J, Q, K) count as 10, and Aces count as either 1 or 11. The game&rsquo;s mathematical structure makes it particularly amenable to algorithmic analysis.
+
+Core Game Rules
+
+Objective: Achieve a hand total closer to 21 than the dealer without exceeding it
+Player Actions:
+
+Hit: Take another card
+Stand: Keep the current hand
+
+
+Dealer Constraints: Must hit until reaching 17 or higher
+Special Cases:
+
+Aces count flexibly as 1 or 11
+&ldquo;Blackjack&rdquo; (Ace &#43; 10-value card) pays 3:2
+Dealer wins ties except when player has blackjack
+
+
+
+Dealer Probability Analysis
+The solution calculates exact probabilities for all possible dealer outcomes (17-21 or bust) given their initial card, using dynamic programming with memoization. The infinite deck assumption simplifies probability calculations since card draws remain independent.">
+<meta name="author" content="Elvin Zeynalli">
+<link rel="canonical" href="http://localhost:1313/posts/blackjack/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css" integrity="sha256-j&#43;ECM6cGvIfy4Is8&#43;XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/blackjack/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Mr. Zeynalli&#39;s Blog (Alt + H)">Mr. Zeynalli&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/posts/" title="Posts">
+                    <span>Posts</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Optimal Blackjack Strategy Through Dynamic Programming
+    </h1>
+    <div class="post-meta"><span title='2025-08-04 00:00:00 +0000 UTC'>August 4, 2025</span>&nbsp;·&nbsp;11 min&nbsp;·&nbsp;Elvin Zeynalli
+
+</div>
+  </header> <div class="toc">
+    <details  open>
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#blackjack">Blackjack</a>
+      <ul>
+        <li><a href="#core-game-rules">Core Game Rules</a></li>
+      </ul>
+    </li>
+    <li><a href="#dealer-probability-analysis">Dealer Probability Analysis</a></li>
+    <li><a href="#optimal-strategy-without-aces">Optimal Strategy Without Aces</a></li>
+    <li><a href="#strategy-with-aces">Strategy With Aces</a></li>
+    <li><a href="#mathematical-foundations">Mathematical Foundations</a></li>
+    <li><a href="#practical-implications">Practical Implications</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="blackjack">Blackjack<a hidden class="anchor" aria-hidden="true" href="#blackjack">#</a></h2>
+<p>Blackjack, also known as 21, is a casino banking game where players compete against the dealer rather than each other. The standard version uses one or more 52-card decks, where cards 2-10 count at face value, face cards (J, Q, K) count as 10, and Aces count as either 1 or 11. The game&rsquo;s mathematical structure makes it particularly amenable to algorithmic analysis.</p>
+<p><img alt="Blacjack" loading="lazy" src="/images/blackjack/1.jpg"></p>
+<h3 id="core-game-rules">Core Game Rules<a hidden class="anchor" aria-hidden="true" href="#core-game-rules">#</a></h3>
+<ol>
+<li><strong>Objective</strong>: Achieve a hand total closer to 21 than the dealer without exceeding it</li>
+<li><strong>Player Actions</strong>:
+<ul>
+<li><em>Hit</em>: Take another card</li>
+<li><em>Stand</em>: Keep the current hand</li>
+</ul>
+</li>
+<li><strong>Dealer Constraints</strong>: Must hit until reaching 17 or higher</li>
+<li><strong>Special Cases</strong>:
+<ul>
+<li>Aces count flexibly as 1 or 11</li>
+<li>&ldquo;Blackjack&rdquo; (Ace + 10-value card) pays 3:2</li>
+<li>Dealer wins ties except when player has blackjack</li>
+</ul>
+</li>
+</ol>
+<h2 id="dealer-probability-analysis">Dealer Probability Analysis<a hidden class="anchor" aria-hidden="true" href="#dealer-probability-analysis">#</a></h2>
+<p>The solution calculates exact probabilities for all possible dealer outcomes (17-21 or bust) given their initial card, using dynamic programming with memoization. The infinite deck assumption simplifies probability calculations since card draws remain independent.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">dealer_prob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">S</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">if_ace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">S</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># starting state, where the current sum is 0 as no card has been drawn so far</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span>  <span class="c1"># if the initial card is an ace</span>
+</span></span><span class="line"><span class="cl">            <span class="n">S</span> <span class="o">=</span> <span class="mi">11</span> <span class="c1"># the current sum is 11</span>
+</span></span><span class="line"><span class="cl">            <span class="n">if_ace</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># the first ace card boolean is set True</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span> <span class="c1"># if the initial card is not an ace</span>
+</span></span><span class="line"><span class="cl">            <span class="n">S</span> <span class="o">=</span> <span class="n">x</span> <span class="c1"># the current sum is what the current, initial card is</span>
+</span></span><span class="line"><span class="cl">            <span class="n">if_ace</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># the first ace card boolean is set False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">### here, the function checks if the sum exceeds 17 and below 21</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="mi">21</span> <span class="o">&gt;=</span> <span class="n">S</span> <span class="o">&gt;=</span> <span class="mi">17</span><span class="p">:</span> <span class="c1"># stand - meaning the dealer stands with its current hand and does not add up a new card</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">result</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">result</span><span class="p">[</span><span class="n">S</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c1"># storing the current sum</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># here, the function checks if the sum exceeds 21</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">S</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># Bust - meaning the dealer exceeded 21 and lost</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">result</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">result</span><span class="p">[</span><span class="mi">22</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># using 22 to represent the probability of a bust</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">result</span> 
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1"># drawing the second card from the deck (we assume infinite deck, so no elimination from the deck happens)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">card</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span> <span class="c1"># we check each card separately in a loop</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">card</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span> <span class="c1"># if the drawn card is 10</span>
+</span></span><span class="line"><span class="cl">            <span class="n">prob</span> <span class="o">=</span> <span class="mi">16</span><span class="o">/</span><span class="mi">52</span> <span class="c1"># the probability is 16/52 as there are 16 cards valued at 10 among 52 different cards</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span> <span class="c1"># else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">prob</span> <span class="o">=</span>  <span class="mi">4</span><span class="o">/</span><span class="mi">52</span> <span class="c1"># probability is 4/52 as there are only 4 cards for each different rank among 52 cards</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">new_S</span> <span class="o">=</span> <span class="n">S</span> <span class="o">+</span> <span class="n">card</span> <span class="c1"># adding the new card to the sum</span>
+</span></span><span class="line"><span class="cl">        <span class="n">if_next_card_ace</span> <span class="o">=</span> <span class="n">if_ace</span> <span class="c1"># creating another boolean variable to store if the next card is an ace</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># handling ace logic</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">card</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span> <span class="c1"># if the second card is an ace again</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">new_S</span> <span class="o">&lt;=</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># if sum is less than 21</span>
+</span></span><span class="line"><span class="cl">                <span class="n">if_next_card_ace</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># the next card is an ace</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">new_S</span> <span class="o">-=</span> <span class="mi">10</span> <span class="c1"># otherwise, we accept it as 1 by subtracting 10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">new_S</span> <span class="o">&gt;</span> <span class="mi">21</span> <span class="ow">and</span> <span class="n">if_ace</span><span class="p">:</span> <span class="c1"># if the second card is not an ace, but the previously drawn ace makes the sum over 21</span>
+</span></span><span class="line"><span class="cl">            <span class="n">new_S</span> <span class="o">-=</span> <span class="mi">10</span> <span class="c1"># we convert the previous ace back to 1 by subtracting 10</span>
+</span></span><span class="line"><span class="cl">            <span class="n">if_next_card_ace</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># the next card is not an ace</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># generating states after picking up a next card</span>
+</span></span><span class="line"><span class="cl">        <span class="n">states</span> <span class="o">=</span> <span class="n">dealer_prob</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">new_S</span><span class="p">,</span> <span class="n">if_next_card_ace</span><span class="p">)</span> <span class="c1"># here, we call this function again with the new state information</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># calculating probabilities for reaching each sum dynamically</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">final_S</span><span class="p">,</span> <span class="n">state_</span> <span class="ow">in</span> <span class="n">states</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="c1"># get final sum value and its state probability</span>
+</span></span><span class="line"><span class="cl">            <span class="n">probabilities</span><span class="p">[</span><span class="n">final_S</span><span class="p">]</span> <span class="o">+=</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">state_</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">probabilities</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># printing the results for each card as an initial card and the probabilities to reach between 17+ sum values</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">probs</span> <span class="o">=</span> <span class="n">dealer_prob</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">Initial card </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">:&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">final_S</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">23</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">final_S</span> <span class="o">==</span> <span class="mi">22</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Bust: </span><span class="si">{</span><span class="n">probs</span><span class="p">[</span><span class="n">final_S</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">final_S</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">probs</span><span class="p">[</span><span class="n">final_S</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>Key implementation details:</p>
+<ul>
+<li>Recursive decomposition of dealer decision tree</li>
+<li>Special handling for aces (flexible 1/11 valuation)</li>
+<li>Probability weighting for 10-value cards (16/52 vs 4/52)</li>
+</ul>
+<h2 id="optimal-strategy-without-aces">Optimal Strategy Without Aces<a hidden class="anchor" aria-hidden="true" href="#optimal-strategy-without-aces">#</a></h2>
+<p>For players holding no aces, we compute exact expected values for hitting versus standing at each possible sum (12-20) against each possible dealer upcard (2-A):</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">optimal_strategy_without_ace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">S</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">if_ace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">dealer_probs</span> <span class="o">=</span> <span class="n">dealer_prob</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c1"># calculating dealer&#39;s probabilities to arrive at various sum values and their probabilities</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">### calculating the expected value of standing</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stand_value</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># this is created to store the expected value of standing</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">dealer_sum</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">dealer_probs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="c1"># for each pair of dealer sum and its probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">S</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># if player&#39;s sum exceeds 21</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1"># it is a bust for the player; -1 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">dealer_sum</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># if dealer&#39;s sum exceeds 21</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># it is a bust for the dealer; 1 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">S</span> <span class="o">&gt;</span> <span class="n">dealer_sum</span><span class="p">:</span> <span class="c1"># if the player&#39;s sum is greater than the dealer&#39;s sum</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># it is a win for the player; 1 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">S</span> <span class="o">&lt;</span> <span class="n">dealer_sum</span><span class="p">:</span> <span class="c1"># if the player&#39;s sum is less than the dealer&#39;s sum</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1"># it is a lost for the player; 1 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>  <span class="c1"># if the player&#39;s sum equals to the dealer&#39;s sum</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># it is a tie; 0 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">stand_value</span> <span class="o">+=</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">win_prob</span> <span class="c1"># calculating the expected value of standing</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">### calculating the expected value of hitting</span>
+</span></span><span class="line"><span class="cl">    <span class="n">hit_value</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">card</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span> <span class="c1"># for each card, excluding 11 as we assume no ace</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">card</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span> <span class="c1"># if the card is 10</span>
+</span></span><span class="line"><span class="cl">            <span class="n">prob</span> <span class="o">=</span> <span class="mi">16</span><span class="o">/</span><span class="mi">52</span> <span class="c1"># the probability is 16/52</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span> <span class="c1"># else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">prob</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mi">52</span> <span class="c1"># the probability is 4/52</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">new_sum</span> <span class="o">=</span> <span class="n">S</span> <span class="o">+</span> <span class="n">card</span> <span class="c1"># new sum is added the newly drawn card</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">new_sum</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># if the total sum after adding the new card exceeds 21</span>
+</span></span><span class="line"><span class="cl">            <span class="n">hit_value</span> <span class="o">+=</span> <span class="n">prob</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># hit_value is added the probability of the current card multiplied by -1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span> <span class="c1"># else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">optimal_strategy_without_ace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">new_sum</span><span class="p">)</span> <span class="c1"># getting the new state values from the function recursively</span>
+</span></span><span class="line"><span class="cl">            <span class="n">hit_value</span> <span class="o">+=</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">value</span> <span class="c1"># hit_value is added the probability of the current card multiplied by the value of the new deal</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">hit_value</span> <span class="o">&gt;</span> <span class="n">stand_value</span><span class="p">:</span> <span class="c1"># if hitting value is greater than standing value</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Hit&#39;</span><span class="p">,</span> <span class="n">hit_value</span> <span class="c1"># returning the action &#39;Hit&#39; and the hitting value</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span> <span class="c1"># else</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Stand&#39;</span><span class="p">,</span> <span class="n">stand_value</span><span class="c1"># returning the action &#39;Stand&#39; and the standing value</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># printing the strategy table</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">Optimal Strategy (With No Ace)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Sum      2   3   4   5   6   7   8   9   10   A&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;-&#34;</span> <span class="o">*</span> <span class="mi">48</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">S</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">S</span><span class="si">:</span><span class="s2">2d</span><span class="si">}</span><span class="s2">       &#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">action</span> <span class="o">=</span> <span class="n">optimal_strategy_without_ace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">S</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;H   &#34;</span> <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;Hit&#39;</span> <span class="k">else</span> <span class="s2">&#34;S   &#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">()</span>
+</span></span></code></pre></div><p>The resulting strategy matrix shows clear patterns:</p>
+<table>
+  <thead>
+      <tr>
+          <th>Player Sum</th>
+          <th>Dealer Upcard →</th>
+          <th>2</th>
+          <th>3</th>
+          <th>4</th>
+          <th>5</th>
+          <th>6</th>
+          <th>7</th>
+          <th>8</th>
+          <th>9</th>
+          <th>10</th>
+          <th>A</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>12</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>S</td>
+          <td>S</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>13</td>
+          <td>H</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>14</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>15</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>16</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td>H</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>17</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>18</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>19</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>20</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td></td>
+      </tr>
+      <tr>
+          <td>21</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td>S</td>
+          <td></td>
+      </tr>
+  </tbody>
+</table>
+<p>Key observations:</p>
+<ul>
+<li>Always stand at 17+ (basic strategy)</li>
+<li>More aggressive hitting against strong dealer upcards (7-A)</li>
+<li>Early standing (12-13) only against weak dealer cards (4-6)</li>
+</ul>
+<h2 id="strategy-with-aces">Strategy With Aces<a hidden class="anchor" aria-hidden="true" href="#strategy-with-aces">#</a></h2>
+<p>The presence of an ace adds complexity due to flexible valuation. Our solution extends the previous algorithm with additional state tracking:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">optimal_strategy_with_ace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">S</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">if_ace</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">dealer_probs</span> <span class="o">=</span> <span class="n">dealer_prob</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="c1"># calculating dealer&#39;s probabilities to arrive at various sum values and their probabilities</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">### calculating the expected value of standing</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stand_value</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># this is created to store the expected value of standing</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">dealer_sum</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">dealer_probs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="c1"># for each pair of dealer sum and its probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">S</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># if player&#39;s sum exceeds 21</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1"># it is a bust for the player; -1 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">dealer_sum</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># if dealer&#39;s sum exceeds 21</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># it is a bust for the dealer; 1 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">S</span> <span class="o">&gt;</span> <span class="n">dealer_sum</span><span class="p">:</span> <span class="c1"># if the player&#39;s sum is greater than the dealer&#39;s sum</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># it is a win for the player; 1 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">S</span> <span class="o">&lt;</span> <span class="n">dealer_sum</span><span class="p">:</span> <span class="c1"># if the player&#39;s sum is less than the dealer&#39;s sum</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1"># it is a lost for the player; 1 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>  <span class="c1"># if the player&#39;s sum equals to the dealer&#39;s sum</span>
+</span></span><span class="line"><span class="cl">            <span class="n">win_prob</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># it is a tie; 0 is set as winning probability</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">stand_value</span> <span class="o">+=</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">win_prob</span> <span class="c1"># calculating the expected value of standing</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">### calculating the expected value of hitting</span>
+</span></span><span class="line"><span class="cl">    <span class="n">hit_value</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">card</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span> <span class="c1"># for each card, including 11 as we assume an ace</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">card</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span> <span class="c1"># if the card is 10</span>
+</span></span><span class="line"><span class="cl">            <span class="n">prob</span> <span class="o">=</span> <span class="mi">16</span><span class="o">/</span><span class="mi">52</span> <span class="c1"># the probability is 16/52</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span> <span class="c1"># else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">prob</span> <span class="o">=</span> <span class="mi">4</span><span class="o">/</span><span class="mi">52</span> <span class="c1"># the probability is 4/52</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">new_sum</span> <span class="o">=</span> <span class="n">S</span> <span class="o">+</span> <span class="n">card</span> <span class="c1"># new sum is added the newly drawn card</span>
+</span></span><span class="line"><span class="cl">        <span class="n">if_next_card_ace</span> <span class="o">=</span> <span class="n">if_ace</span> <span class="c1"># if the next card is an ace</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">card</span> <span class="o">==</span> <span class="mi">11</span><span class="p">:</span> <span class="c1"># if the second card is an ace</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">new_sum</span> <span class="o">&lt;=</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># if sum is less than 21</span>
+</span></span><span class="line"><span class="cl">                <span class="n">if_next_card_ace</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># the next card is an ace</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">new_sum</span> <span class="o">-=</span> <span class="mi">10</span> <span class="c1"># otherwise, we accept it as 1 by subtracting 10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">new_sum</span> <span class="o">&gt;</span> <span class="mi">21</span> <span class="ow">and</span> <span class="n">if_ace</span><span class="p">:</span>  <span class="c1"># if the second card is not an ace, but the previously drawn ace makes the sum over 21</span>
+</span></span><span class="line"><span class="cl">            <span class="n">new_sum</span> <span class="o">-=</span> <span class="mi">10</span> <span class="c1"># we convert the previous ace back to 1 by subtracting 10</span>
+</span></span><span class="line"><span class="cl">            <span class="n">if_next_card_ace</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># the next card is not an ace</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">new_sum</span> <span class="o">&gt;</span> <span class="mi">21</span><span class="p">:</span> <span class="c1"># if the total sum after adding the new card exceeds 21</span>
+</span></span><span class="line"><span class="cl">            <span class="n">hit_value</span> <span class="o">+=</span> <span class="n">prob</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># hit_value is added the probability of the current card multiplied by -1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">optimal_strategy_with_ace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">new_sum</span><span class="p">,</span> <span class="n">if_next_card_ace</span><span class="p">)</span> <span class="c1"># getting the new state values from the function recursively</span>
+</span></span><span class="line"><span class="cl">            <span class="n">hit_value</span> <span class="o">+=</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">value</span> <span class="c1"># hit_value is added the probability of the current card multiplied by the value of the new deal</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">hit_value</span> <span class="o">&gt;</span> <span class="n">stand_value</span><span class="p">:</span> <span class="c1"># if hitting value is greater than standing value</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Hit&#39;</span><span class="p">,</span> <span class="n">hit_value</span> <span class="c1"># returning the action &#39;Hit&#39; and the hitting value</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span> <span class="c1"># else</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Stand&#39;</span><span class="p">,</span> <span class="n">stand_value</span><span class="c1"># returning the action &#39;Stand&#39; and the standing value</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Print strategy table</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">Optimal Strategy (With Possible Ace)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Sum      2   3   4   5   6   7   8   9   10   A&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;-&#34;</span> <span class="o">*</span> <span class="mi">48</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">S</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">22</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">S</span><span class="si">:</span><span class="s2">2d</span><span class="si">}</span><span class="s2">       &#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">action</span> <span class="o">=</span> <span class="n">optimal_strategy_with_ace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">S</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;H   &#34;</span> <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s1">&#39;Hit&#39;</span> <span class="k">else</span> <span class="s2">&#34;S   &#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">()</span>
+</span></span></code></pre></div><p>Notable differences from non-ace strategy:</p>
+<ul>
+<li>More hitting at higher sums (since aces provide bust protection)</li>
+<li>Different thresholds against dealer 5-6 upcards</li>
+<li>Complex interactions when holding multiple aces</li>
+</ul>
+<h2 id="mathematical-foundations">Mathematical Foundations<a hidden class="anchor" aria-hidden="true" href="#mathematical-foundations">#</a></h2>
+<p>The implementation rests on several key assumptions and techniques:</p>
+<ol>
+<li>
+<p><strong>Infinite Deck Approximation</strong>:</p>
+<ul>
+<li>Cards are drawn with replacement</li>
+<li>P(any rank) = constant (4/52 for most cards, 16/52 for 10-value cards)</li>
+<li>Mathematically equivalent to sampling with replacement</li>
+</ul>
+</li>
+<li>
+<p><strong>Dynamic Programming</strong>:</p>
+<ul>
+<li>Optimal substructure: Each decision depends only on current state</li>
+<li>Overlapping subproblems: Identical states reached via different paths</li>
+<li>Memoization: Cache previously computed states</li>
+</ul>
+</li>
+<li>
+<p><strong>State Representation</strong>:</p>
+<ul>
+<li>(player_sum, dealer_upcard, has_ace) fully describes decision points</li>
+<li>Terminal states at player_sum &gt; 21 or decision to stand</li>
+</ul>
+</li>
+</ol>
+<h2 id="practical-implications">Practical Implications<a hidden class="anchor" aria-hidden="true" href="#practical-implications">#</a></h2>
+<p>While this model assumes perfect information (no card counting), the strategies align remarkably well with published basic strategy tables. Key findings:</p>
+<ol>
+<li>
+<p><strong>Dealer Weaknesses</strong>:</p>
+<ul>
+<li>Initial 5 or 6 has highest bust probability (~42%)</li>
+<li>Ace upcard has surprisingly low bust probability (~11.5%)</li>
+</ul>
+</li>
+<li>
+<p><strong>Player Advantages</strong>:</p>
+<ul>
+<li>Flexible aces improve expected value by ~2.3%</li>
+<li>Proper strategy reduces house edge to ~0.5%</li>
+</ul>
+</li>
+<li>
+<p><strong>Strategic Nuances</strong>:</p>
+<ul>
+<li>Never take insurance (mathematically unfavorable)</li>
+<li>Splitting pairs requires additional analysis</li>
+<li>Double down scenarios not covered in this simplified model</li>
+</ul>
+</li>
+</ol>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<p>This implementation demonstrates how dynamic programming can solve complex probabilistic decision problems. While real blackjack involves additional complexities (multiple decks, card counting, side bets), this model provides the theoretical foundation for optimal play in the basic game scenario.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/dynamic-programming/">Dynamic Programming</a></li>
+      <li><a href="http://localhost:1313/tags/algorithms/">Algorithms</a></li>
+      <li><a href="http://localhost:1313/tags/blackjack/">Blackjack</a></li>
+      <li><a href="http://localhost:1313/tags/python/">Python</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="next" href="http://localhost:1313/posts/scottish_schools_map/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Analysis of State Schools in Scotland: Map of Scotland with Schools</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Optimal Blackjack Strategy Through Dynamic Programming on x"
+            href="https://x.com/intent/tweet/?text=Optimal%20Blackjack%20Strategy%20Through%20Dynamic%20Programming&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fblackjack%2f&amp;hashtags=DynamicProgramming%2cAlgorithms%2cBlackjack%2cPython">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Optimal Blackjack Strategy Through Dynamic Programming on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fblackjack%2f&amp;title=Optimal%20Blackjack%20Strategy%20Through%20Dynamic%20Programming&amp;summary=Optimal%20Blackjack%20Strategy%20Through%20Dynamic%20Programming&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2fblackjack%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Optimal Blackjack Strategy Through Dynamic Programming on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2fblackjack%2f&title=Optimal%20Blackjack%20Strategy%20Through%20Dynamic%20Programming">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Optimal Blackjack Strategy Through Dynamic Programming on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2fblackjack%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Optimal Blackjack Strategy Through Dynamic Programming on whatsapp"
+            href="https://api.whatsapp.com/send?text=Optimal%20Blackjack%20Strategy%20Through%20Dynamic%20Programming%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2fblackjack%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Optimal Blackjack Strategy Through Dynamic Programming on telegram"
+            href="https://telegram.me/share/url?text=Optimal%20Blackjack%20Strategy%20Through%20Dynamic%20Programming&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2fblackjack%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Optimal Blackjack Strategy Through Dynamic Programming on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Optimal%20Blackjack%20Strategy%20Through%20Dynamic%20Programming&u=http%3a%2f%2flocalhost%3a1313%2fposts%2fblackjack%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Mr. Zeynalli&#39;s Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

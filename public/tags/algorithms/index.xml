@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Algorithms on Mr. Zeynalli&#39;s Blog</title>
+    <link>http://localhost:1313/tags/algorithms/</link>
+    <description>Recent content in Algorithms on Mr. Zeynalli&#39;s Blog</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 04 Aug 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/algorithms/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Optimal Blackjack Strategy Through Dynamic Programming</title>
+      <link>http://localhost:1313/posts/blackjack/</link>
+      <pubDate>Mon, 04 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/blackjack/</guid>
+      <description>&lt;h2 id=&#34;blackjack&#34;&gt;Blackjack&lt;/h2&gt;
+&lt;p&gt;Blackjack, also known as 21, is a casino banking game where players compete against the dealer rather than each other. The standard version uses one or more 52-card decks, where cards 2-10 count at face value, face cards (J, Q, K) count as 10, and Aces count as either 1 or 11. The game&amp;rsquo;s mathematical structure makes it particularly amenable to algorithmic analysis.&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;Blacjack&#34; loading=&#34;lazy&#34; src=&#34;http://localhost:1313/images/blackjack/1.jpg&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;core-game-rules&#34;&gt;Core Game Rules&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Objective&lt;/strong&gt;: Achieve a hand total closer to 21 than the dealer without exceeding it&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Player Actions&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Hit&lt;/em&gt;: Take another card&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Stand&lt;/em&gt;: Keep the current hand&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Dealer Constraints&lt;/strong&gt;: Must hit until reaching 17 or higher&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Special Cases&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;Aces count flexibly as 1 or 11&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Blackjack&amp;rdquo; (Ace + 10-value card) pays 3:2&lt;/li&gt;
+&lt;li&gt;Dealer wins ties except when player has blackjack&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;dealer-probability-analysis&#34;&gt;Dealer Probability Analysis&lt;/h2&gt;
+&lt;p&gt;The solution calculates exact probabilities for all possible dealer outcomes (17-21 or bust) given their initial card, using dynamic programming with memoization. The infinite deck assumption simplifies probability calculations since card draws remain independent.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
